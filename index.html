@@ -2,93 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Abby's College Planner</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>College Tracker</title>
 <style>
-:root{--bg:#f5f3ee;--paper:#fffefa;--ink:#303a33;--muted:#74796f;--line:#dedfd5;--sage:#dce5d7}
+:root{--bg:#f8f7f3;--paper:#fffefa;--ink:#25332f;--muted:#757a76;--line:#dddfd8;--sage:#e6ece2}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:9px 14px}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button,a,input,select,textarea{touch-action:manipulation}
+button{cursor:pointer;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 15px}
 button:hover{background:var(--sage)}
-button.primary{background:var(--ink);color:white}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8b9e80;outline-offset:2px}
-header,main{max-width:1120px;margin:auto;padding:28px}
-header{padding-top:48px}
-.eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
-h1{font:46px/1.1 Georgia,serif;margin:14px 0}
-h2{font:27px Georgia,serif;margin:0}
-p{color:var(--muted)}
-.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.between{justify-content:space-between}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px}
-.stat,.panel,.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px}
-.stat strong{display:block;font:34px Georgia,serif}
-.stat span{color:var(--muted);font-size:13px}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}
-nav button.active{background:var(--ink);color:white}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:20px}
-.card h3{font:23px Georgia,serif;margin:12px 0}
-.badge{font-size:11px;background:var(--sage);border-radius:20px;padding:5px 10px}
-.detail{font-size:13px;color:var(--muted);margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-.deadline{font-size:13px;font-weight:600}
-.overdue{color:#9a4e3f}
-.task{display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
-.task:last-child{border:0}
-.task input{width:19px;height:19px;accent-color:#607357}
-.task .body{flex:1;min-width:0;overflow-wrap:anywhere}
+button.primary{background:var(--ink);color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #91a487;outline-offset:3px}
+header{border-bottom:1px solid var(--line);background:var(--paper)}
+.bar{max-width:1400px;margin:auto;padding:25px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+h1{font:36px Georgia,serif;margin:0}
+h2{font:24px Georgia,serif;margin:0}
+nav{display:flex;gap:25px;flex-wrap:wrap}
+nav button{border:0;border-radius:0;background:transparent;padding:12px 0;color:var(--muted)}
+nav button.active{color:var(--ink);border-bottom:2px solid var(--ink)}
+main{max-width:1400px;margin:auto;padding:32px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:30px}
+.stat{border:1px solid var(--line);border-radius:7px;background:var(--paper);padding:24px}
+.stat span{color:var(--muted)}
+.stat strong{display:block;font:36px Georgia,serif;margin-top:9px}
+.panel{border:1px solid var(--line);border-radius:7px;background:var(--paper);overflow:hidden}
+.toolbar,.panelhead{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+input:not([type=checkbox]),select,textarea{padding:11px 13px;background:transparent;border:1px solid var(--line);border-radius:5px;width:100%}
+.toolbar input{max-width:360px}
+.toolbar select{width:auto;max-width:100%}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;text-align:left}
+th{font-weight:500;color:#52605b;background:#f4f4ef}
+th,td{padding:18px 22px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td{vertical-align:middle}
+.school{font-weight:600}
+small{display:block;color:var(--muted);margin-top:4px}
+.badge{display:inline-block;background:var(--sage);border-radius:20px;padding:5px 10px;font-size:12px;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:65px 24px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
+.list{padding:0 22px}
+.item{display:flex;align-items:center;gap:12px;padding:18px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.grow{flex:1;min-width:0;overflow-wrap:anywhere}
+.item input{width:18px;height:18px;accent-color:#65755c}
 .done{text-decoration:line-through;color:var(--muted)}
-.empty{padding:35px;text-align:center;color:var(--muted)}
-footer{margin-top:32px;font-size:12px;color:var(--muted)}
-dialog{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--paper);color:var(--ink);width:min(520px,92vw);max-height:90vh;overflow:auto}
-dialog::backdrop{background:#20251d75}
-label{display:block;font-size:13px;margin:15px 0 5px}
-input:not([type=checkbox]),select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink)}
-textarea{min-height:85px;resize:vertical}
-.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
-#search{width:min(300px,100%)}
-.notice{color:#9a4e3f;font-weight:600}
-a{color:#4c6449}
-@media(max-width:600px){header,main{padding:20px}header{padding-top:32px}h1{font-size:36px}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:28px}}
+.late{color:#a15142}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.link{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.icon{padding:7px 11px}
+footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+#notice{color:#a15142;margin-bottom:12px}
+dialog{width:min(520px,94vw);max-height:90vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:26px;background:var(--paper)}
+dialog::backdrop{background:#20292375}
+label{display:block;font-size:13px;margin:16px 0 6px}
+textarea{min-height:90px;resize:vertical}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.notes{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:760px){
+.bar,main{padding:20px}h1{font-size:29px}
+nav{order:3;width:100%;gap:22px}
+.stats{gap:10px}.stat{padding:16px}.stat strong{font-size:30px}
+.split{grid-template-columns:1fr}
+th,td{padding:14px}
+}
+@media(max-width:420px){.stats{grid-template-columns:1fr}.stat{display:flex;align-items:center;justify-content:space-between}.stat strong{margin:0}}
 </style>
 </head>
 <body>
 <header>
-<div class="eyebrow">Abby's planner · Class of 2027</div>
-<h1>Your next chapter.</h1>
-<p>A little organization for a big adventure.</p>
-</header>
-<main>
-<div id="notice" class="notice" role="status"></div>
-<div class="stats" id="stats"></div>
-<div class="row between">
-<nav aria-label="Planner sections">
-<button class="active" data-tab="schools">My colleges</button>
-<button data-tab="tasks">Checklist</button>
+<div class="bar">
+<h1>College Tracker</h1>
+<nav aria-label="Sections">
+<button data-tab="colleges" class="active">Colleges</button>
+<button data-tab="tasks">Tasks</button>
 <button data-tab="deadlines">Deadlines</button>
+<button data-tab="scholarships">Scholarships</button>
 </nav>
-<div class="row">
-<button id="export">Back up data</button>
-<button id="import">Restore backup</button>
-<input type="file" id="file" accept=".json,application/json" hidden>
-</div>
-</div>
-<div class="row between">
-<h2 id="heading">The college list</h2>
 <button class="primary" id="add">+ Add college</button>
 </div>
-<p id="subtitle">Keep every possibility in one place.</p>
-<input id="search" aria-label="Search colleges" placeholder="Search colleges…">
-<div id="content"></div>
+</header>
+<main>
+<div id="notice" role="status"></div>
+<div class="stats" id="stats"></div>
+<div id="view"></div>
 <footer>
-Saved in this browser only. Clearing site data can erase your planner.
-Use “Back up data” to download a copy you can restore later.
+<button id="export" title="Download a backup of this browser's data">Export</button>
+<button id="import" title="Restore a downloaded backup">Import</button>
+<input type="file" id="backup" accept=".json,application/json" hidden>
 </footer>
 </main>
-
-<dialog id="editor">
+<dialog id="modal">
 <form id="form">
-<h2 id="formTitle"></h2>
+<h2 id="form-title"></h2>
 <div id="fields"></div>
 <div class="actions">
 <button type="button" id="cancel">Cancel</button>
@@ -96,153 +103,207 @@ Use “Back up data” to download a copy you can restore later.
 </div>
 </form>
 </dialog>
-
 <script>
-const KEY="abby-college-planner-v1";
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const KEY="college-tracker-v2";
+const OLD="abby-college-planner-v1";
 const statuses=["Considering","Not started","In progress","Submitted","Accepted","Waitlisted","Denied","Enrolled"];
-let data={schools:[],tasks:[]},tab="schools",editing=null,kind="school";
-function valid(d){
-return d&&Array.isArray(d.schools)&&Array.isArray(d.tasks)&&
-d.schools.every(s=>s&&typeof s.id==="string"&&typeof s.name==="string"&&statuses.includes(s.status))&&
-d.tasks.every(t=>t&&typeof t.id==="string"&&typeof t.title==="string"&&typeof t.done==="boolean")&&
-[...d.schools,...d.tasks].every(x=>["date","notes","major","url","schoolId","category"].every(k=>x[k]==null||typeof x[k]==="string"))&&
-new Set([...d.schools,...d.tasks].map(x=>x.id)).size===d.schools.length+d.tasks.length;
+const scholarshipStatuses=["Not started","In progress","Submitted","Awarded","Not awarded"];
+const categories=["Essay","Recommendation","Transcript","Test scores","Scholarship","Nomination","Interview","Financial aid","Other"];
+let data={schools:[],tasks:[],scholarships:[]};
+let tab="colleges",query="",filter="",editId=null,editType="",blocked=false;
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function today(){
+const d=new Date();
+return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function dateLabel(v){
+if(!v)return "—";
+const d=new Date(v+"T12:00:00");
+return isNaN(d)?"—":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+}
+function url(v){
+try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:""}catch{return ""}
+}
+function submitted(s){return ["Submitted","Accepted","Waitlisted","Denied","Enrolled"].includes(s.status)}
+function scholarshipDone(s){return ["Submitted","Awarded","Not awarded"].includes(s.status)}
+function normalize(d){
+if(!d||!Array.isArray(d.schools)||!Array.isArray(d.tasks))throw Error();
+if(d.scholarships===undefined)d.scholarships=[];
+if(!Array.isArray(d.scholarships))throw Error();
+const all=[...d.schools,...d.tasks,...d.scholarships];
+if(!all.every(x=>x&&typeof x.id==="string"))throw Error();
+if(new Set(all.map(x=>x.id)).size!==all.length)throw Error();
+for(const x of all){
+for(const k of ["name","title","date","notes","major","url","schoolId","category","amount"]){
+if(x[k]!=null&&typeof x[k]!=="string")throw Error();
+}
+if(x.date&&!/^\d{4}-\d{2}-\d{2}$/.test(x.date))throw Error();
+}
+if(!d.schools.every(x=>x.name&&statuses.includes(x.status)))throw Error();
+if(!d.tasks.every(x=>x.title&&typeof x.done==="boolean"))throw Error();
+if(!d.scholarships.every(x=>x.name&&scholarshipStatuses.includes(x.status)))throw Error();
+return d;
 }
 try{
-const saved=localStorage.getItem(KEY);
-if(saved){const parsed=JSON.parse(saved);if(!valid(parsed))throw Error();data=parsed}
-}catch(e){$("#notice").textContent="Saved data could not be loaded. Restore a backup before making changes."}
+const raw=localStorage.getItem(KEY)||localStorage.getItem(OLD);
+if(raw)data=normalize(JSON.parse(raw));
+}catch{
+blocked=true;
+$("#notice").textContent="Saved data could not be loaded. Import a backup before editing.";
+}
 function save(){
 try{localStorage.setItem(KEY,JSON.stringify(data));$("#notice").textContent=""}
-catch(e){$("#notice").textContent="Browser saving failed. Download a backup to keep your changes."}
+catch{$("#notice").textContent="Changes could not be saved in this browser. Export a backup."}
 render();
 }
-function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function fmt(date){if(!date)return "No deadline set";const d=new Date(date+"T12:00:00");return isNaN(d)?"No deadline set":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}
-function finished(s){return ["Submitted","Accepted","Waitlisted","Denied","Enrolled"].includes(s.status)}
-function safeUrl(url){try{const u=new URL(url);return ["https:","http:"].includes(u.protocol)?u.href:null}catch{return null}}
-function deadlines(){
+function due(){
 return [
-...data.schools.filter(s=>s.date&&!finished(s)).map(s=>({date:s.date,title:s.name,type:"College application"})),
-...data.tasks.filter(t=>t.date&&!t.done).map(t=>({date:t.date,title:t.title,type:t.category||"Task"}))
+...data.schools.filter(s=>s.date&&!submitted(s)).map(s=>({id:s.id,type:"schools",name:s.name,date:s.date,label:"Application"})),
+...data.tasks.filter(t=>t.date&&!t.done).map(t=>({id:t.id,type:"tasks",name:t.title,date:t.date,label:t.category||"Task"})),
+...data.scholarships.filter(s=>s.date&&!scholarshipDone(s)).map(s=>({id:s.id,type:"scholarships",name:s.name,date:s.date,label:"Scholarship"}))
 ].sort((a,b)=>a.date.localeCompare(b.date));
 }
-function render(){
-$("#stats").innerHTML=[
-[data.schools.length,"Colleges on your list"],
-[data.schools.filter(finished).length,"Applications submitted"],
-[data.tasks.filter(t=>!t.done).length,"Open tasks"]
-].map(([n,l])=>`<div class="stat"><strong>${n}</strong><span>${l}</span></div>`).join("");
-document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
-$("#heading").textContent={schools:"The college list",tasks:"One step at a time",deadlines:"Dates to keep in mind"}[tab];
-$("#subtitle").textContent={schools:"Keep every possibility in one place.",tasks:"Essays, recommendations, scholarships, and everything in between.",deadlines:"Open application and task deadlines, earliest first."}[tab];
-$("#add").hidden=tab==="deadlines";
-$("#add").textContent=tab==="schools"?"+ Add college":"+ Add task";
-$("#search").hidden=tab!=="schools";
-if(tab==="schools"){
-const q=$("#search").value.toLowerCase();
-const schools=data.schools.filter(s=>s.name.toLowerCase().includes(q));
-$("#content").innerHTML=schools.length?`<div class="grid">${schools.map(s=>{
+function empty(text){return `<div class="empty">${text}</div>`}
+function dateHtml(d,open=true){return `<span class="${d&&d<today()&&open?"late":""}">${dateLabel(d)}</span>`}
+function buttons(type,id){
+return `<div class="row"><button class="icon" data-edit="${esc(id)}" data-type="${type}">Edit</button><button class="icon" data-delete="${esc(id)}" data-type="${type}" aria-label="Delete record">×</button></div>`;
+}
+function taskList(items){
+return items.length?`<div class="list">${items.map(t=>{
+const s=data.schools.find(s=>s.id===t.schoolId);
+return `<div class="item">
+<input type="checkbox" data-check="${esc(t.id)}" ${t.done?"checked":""} aria-label="Complete ${esc(t.title)}">
+<div class="grow"><span class="${t.done?"done":""}">${esc(t.title)}</span>
+<small>${esc(t.category||"Other")}${s?" · "+esc(s.name):""}${t.date?" · "+dateHtml(t.date,!t.done):""}</small></div>
+${buttons("tasks",t.id)}</div>`;
+}).join("")}</div>`:empty("No tasks");
+}
+function deadlineList(items){
+return items.length?`<div class="list">${items.map(d=>`<div class="item"><div class="grow">${esc(d.name)}<small>${esc(d.label)}</small></div>${dateHtml(d.date)}<button class="icon" data-edit="${esc(d.id)}" data-type="${d.type}">Edit</button></div>`).join("")}</div>`:empty("No deadlines");
+}
+function collegeRows(){
+const list=data.schools.filter(s=>s.name.toLowerCase().includes(query.toLowerCase())&&(!filter||s.status===filter));
+return list.length?list.map(s=>{
 const tasks=data.tasks.filter(t=>t.schoolId===s.id);
-const url=safeUrl(s.url);
-return `<article class="card">
-<span class="badge">${esc(s.status)}</span>
-<h3>${esc(s.name)}</h3>
-<div class="detail">${esc(s.major||"Major not added")}</div>
-<div class="deadline ${s.date&&s.date<today()&&!finished(s)?"overdue":""}">${s.date&&s.date<today()&&!finished(s)?"Past due · ":""}${fmt(s.date)}</div>
-${tasks.length?`<div class="detail">${tasks.filter(t=>t.done).length} of ${tasks.length} tasks complete</div>`:""}
-${s.notes?`<p class="detail">${esc(s.notes)}</p>`:""}
-<div class="row" style="margin-top:18px">
-<button data-edit-school="${esc(s.id)}">Edit</button>
-${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open portal ↗</a>`:""}
-<button data-delete-school="${esc(s.id)}" aria-label="Delete ${esc(s.name)}">Delete</button>
-</div></article>`}).join("")}</div>`:
-`<div class="empty">${q?"No matching colleges.":"Your next chapter starts here. Add your first college."}</div>`;
+const link=url(s.url);
+return `<tr><td><span class="school">${esc(s.name)}</span>${s.major?`<small>${esc(s.major)}</small>`:""}</td>
+<td>${dateHtml(s.date,!submitted(s))}</td><td><span class="badge">${esc(s.status)}</span></td>
+<td>${tasks.filter(t=>t.done).length}/${tasks.length}</td>
+<td>${link?`<a class="link" href="${esc(link)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:"—"}</td>
+<td>${buttons("schools",s.id)}</td></tr>`;
+}).join(""):`<tr><td colspan="6">${empty(query||filter?"No matches":"No colleges added")}</td></tr>`;
+}
+function render(){
+const deadlines=due();
+$("#stats").innerHTML=[
+[data.schools.length,"Colleges"],
+[data.schools.filter(submitted).length,"Submitted"],
+[deadlines.filter(d=>d.date>=today()).length,"Upcoming deadlines"]
+].map(([n,l])=>`<div class="stat"><span>${l}</span><strong>${n}</strong></div>`).join("");
+document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+$("#add").hidden=tab==="deadlines";
+$("#add").textContent={colleges:"+ Add college",tasks:"+ Add task",scholarships:"+ Add scholarship"}[tab]||"";
+if(tab==="colleges"){
+$("#view").innerHTML=`<section class="panel">
+<div class="toolbar"><input id="search" aria-label="Search colleges" placeholder="Search colleges" value="${esc(query)}">
+<select id="filter" aria-label="Filter by status"><option value="">All statuses</option>${statuses.map(s=>`<option ${filter===s?"selected":""}>${s}</option>`).join("")}</select></div>
+<div class="scroll"><table><thead><tr><th>College</th><th>Deadline</th><th>Status</th><th>Tasks</th><th>Portal</th><th aria-label="Actions"></th></tr></thead><tbody id="college-rows">${collegeRows()}</tbody></table></div></section>
+<div class="split"><section class="panel"><div class="panelhead"><h2>Upcoming deadlines</h2></div>${deadlineList(deadlines.slice(0,5))}</section>
+<section class="panel"><div class="panelhead"><h2>Tasks</h2><button data-new="tasks">+ Add task</button></div>${taskList(data.tasks.filter(t=>!t.done).slice(0,5))}</section></div>`;
+$("#search").oninput=e=>{query=e.target.value;$("#college-rows").innerHTML=collegeRows()};
+$("#filter").onchange=e=>{filter=e.target.value;$("#college-rows").innerHTML=collegeRows()};
 }
 if(tab==="tasks"){
-const list=[...data.tasks].sort((a,b)=>Number(a.done)-Number(b.done)||(a.date||"9999").localeCompare(b.date||"9999"));
-$("#content").innerHTML=list.length?`<div class="panel" style="margin-top:20px">${list.map(t=>{
-const school=data.schools.find(s=>s.id===t.schoolId);
-return `<div class="task">
-<input type="checkbox" data-check="${esc(t.id)}" ${t.done?"checked":""} aria-label="Complete ${esc(t.title)}">
-<div class="body"><span class="${t.done?"done":""}">${esc(t.title)}</span>
-<div class="detail">${esc(t.category||"Other")}${school?" · "+esc(school.name):""} · <span class="${t.date&&t.date<today()&&!t.done?"overdue":""}">${fmt(t.date)}</span></div>
-${t.notes?`<div class="detail">${esc(t.notes)}</div>`:""}</div>
-<button data-edit-task="${esc(t.id)}">Edit</button>
-<button data-delete-task="${esc(t.id)}" aria-label="Delete ${esc(t.title)}">×</button>
-</div>`}).join("")}</div>`:`<div class="empty">Nothing on your checklist yet. Add your first task.</div>`;
+const tasks=[...data.tasks].sort((a,b)=>Number(a.done)-Number(b.done)||(a.date||"9999").localeCompare(b.date||"9999"));
+$("#view").innerHTML=`<section class="panel"><div class="panelhead"><h2>Tasks</h2></div>${taskList(tasks)}</section>`;
 }
-if(tab==="deadlines"){
-const list=deadlines();
-$("#content").innerHTML=list.length?`<div class="panel" style="margin-top:20px">${list.map(d=>`<div class="task"><div class="body"><strong>${esc(d.title)}</strong><div class="detail">${esc(d.type)}</div></div><span class="deadline ${d.date<today()?"overdue":""}">${d.date<today()?"Past due · ":""}${fmt(d.date)}</span></div>`).join("")}</div>`:`<div class="empty">No open deadlines. Add a date to a college or task to see it here.</div>`;
+if(tab==="deadlines")$("#view").innerHTML=`<section class="panel"><div class="panelhead"><h2>Deadlines</h2></div>${deadlineList(deadlines)}</section>`;
+if(tab==="scholarships"){
+$("#view").innerHTML=`<section class="panel"><div class="scroll"><table><thead><tr><th>Scholarship</th><th>Amount</th><th>Deadline</th><th>Status</th><th>Link</th><th aria-label="Actions"></th></tr></thead><tbody>${data.scholarships.length?data.scholarships.map(s=>{
+const link=url(s.url);
+return `<tr><td class="school">${esc(s.name)}</td><td>${esc(s.amount||"—")}</td><td>${dateHtml(s.date,!scholarshipDone(s))}</td><td><span class="badge">${esc(s.status)}</span></td><td>${link?`<a class="link" href="${esc(link)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:"—"}</td><td>${buttons("scholarships",s.id)}</td></tr>`;
+}).join(""):`<tr><td colspan="6">${empty("No scholarships added")}</td></tr>`}</tbody></table></div></section>`;
 }
 }
-function input(label,name,value="",type="text",required=false){
+function field(label,name,value="",type="text",required=false){
 return `<label for="f-${name}">${label}</label><input id="f-${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?"required":""}>`;
 }
-function select(label,name,options,value){
+function choice(label,name,options,value){
 return `<label for="f-${name}">${label}</label><select id="f-${name}" name="${name}">${options.map(([v,l])=>`<option value="${esc(v)}" ${v===value?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
 }
-function openEditor(type,id=null){
-kind=type;editing=id;
-const item=(type==="school"?data.schools:data.tasks).find(x=>x.id===id)||{};
-$("#formTitle").textContent=(id?"Edit ":"Add ")+(type==="school"?"college":"task");
-$("#fields").innerHTML=type==="school"?
-input("College name","name",item.name,"text",true)+
-input("Intended major","major",item.major)+
-select("Application status","status",statuses.map(s=>[s,s]),item.status||"Considering")+
-input("Application deadline","date",item.date,"date")+
-input("Portal link (https://…)","url",item.url,"url"):
-input("Task","title",item.title,"text",true)+
-select("Category","category",["Essay","Recommendation","Transcript","Test scores","Scholarship","Nomination","Interview","Financial aid","Other"].map(s=>[s,s]),item.category||"Essay")+
-select("College","schoolId",[["","General / multiple colleges"],...data.schools.map(s=>[s.id,s.name])],item.schoolId||"")+
-input("Deadline","date",item.date,"date");
-$("#fields").innerHTML+=`<label for="f-notes">Notes</label><textarea id="f-notes" name="notes">${esc(item.notes||"")}</textarea>`;
-$("#editor").showModal();
+function edit(type,id=null){
+if(blocked)return;
+editType=type;editId=id;
+const x=data[type].find(x=>x.id===id)||{};
+$("#form-title").textContent=(id?"Edit ":"Add ")+{schools:"college",tasks:"task",scholarships:"scholarship"}[type];
+let html="";
+if(type==="schools"){
+html=field("College","name",x.name,"text",true)+field("Major","major",x.major)+choice("Status","status",statuses.map(s=>[s,s]),x.status||"Considering")+field("Deadline","date",x.date,"date")+field("Portal URL","url",x.url,"url");
+}
+if(type==="tasks"){
+html=field("Task","title",x.title,"text",true)+choice("Category","category",categories.map(s=>[s,s]),x.category||"Essay")+choice("College","schoolId",[["","General"],...data.schools.map(s=>[s.id,s.name])],x.schoolId||"")+field("Deadline","date",x.date,"date");
+}
+if(type==="scholarships"){
+html=field("Scholarship","name",x.name,"text",true)+field("Amount","amount",x.amount)+choice("Status","status",scholarshipStatuses.map(s=>[s,s]),x.status||"Not started")+field("Deadline","date",x.date,"date")+field("URL","url",x.url,"url");
+}
+$("#fields").innerHTML=html+`<label for="f-notes">Notes</label><textarea id="f-notes" name="notes">${esc(x.notes||"")}</textarea>`;
+$("#modal").showModal();
 }
 $("#form").onsubmit=e=>{
 e.preventDefault();
 const values=Object.fromEntries(new FormData(e.target));
-if(!(values.name||values.title||"").trim())return;
-const list=kind==="school"?data.schools:data.tasks;
-if(editing){const i=list.findIndex(x=>x.id===editing);list[i]={...list[i],...values}}
-else list.push({id:crypto.randomUUID(),...values,...(kind==="task"?{done:false}:{})});
-save();$("#editor").close();
-};
-$("#cancel").onclick=()=>$("#editor").close();
-$("#add").onclick=()=>openEditor(tab==="schools"?"school":"task");
-$("#search").oninput=render;
-document.addEventListener("click",e=>{
-const b=e.target.closest("button");if(!b)return;
-if(b.dataset.tab){tab=b.dataset.tab;render()}
-if(b.dataset.editSchool)openEditor("school",b.dataset.editSchool);
-if(b.dataset.editTask)openEditor("task",b.dataset.editTask);
-if(b.dataset.deleteSchool&&confirm("Delete this college? Its tasks will remain under General.")){
-const id=b.dataset.deleteSchool;
-data.schools=data.schools.filter(s=>s.id!==id);
-data.tasks.forEach(t=>{if(t.schoolId===id)t.schoolId=""});save();
+const nameField=editType==="tasks"?"title":"name";
+values[nameField]=values[nameField].trim();
+if(!values[nameField]){alert("Enter a name.");return}
+if(values.url&&!url(values.url)){alert("Use an https:// or http:// link.");return}
+const list=data[editType];
+if(editId){
+const i=list.findIndex(x=>x.id===editId);
+list[i]={...list[i],...values};
+}else{
+list.push({id:crypto.randomUUID(),...values,...(editType==="tasks"?{done:false}:{})});
 }
-if(b.dataset.deleteTask&&confirm("Delete this task?")){data.tasks=data.tasks.filter(t=>t.id!==b.dataset.deleteTask);save()}
+save();$("#modal").close();
+};
+$("#cancel").onclick=()=>$("#modal").close();
+$("#add").onclick=()=>edit({colleges:"schools",tasks:"tasks",scholarships:"scholarships"}[tab]);
+document.addEventListener("click",e=>{
+const b=e.target.closest("button");
+if(!b)return;
+if(b.dataset.tab){tab=b.dataset.tab;render()}
+if(b.dataset.new)edit(b.dataset.new);
+if(b.dataset.edit)edit(b.dataset.type,b.dataset.edit);
+if(b.dataset.delete&&!blocked){
+const type=b.dataset.type,id=b.dataset.delete;
+if(confirm(type==="schools"?"Delete this college? Its tasks will remain under General.":"Delete this item?")){
+data[type]=data[type].filter(x=>x.id!==id);
+if(type==="schools")data.tasks.forEach(t=>{if(t.schoolId===id)t.schoolId=""});
+save();
+}
+}
 });
 document.addEventListener("change",e=>{
-if(e.target.dataset.check){const t=data.tasks.find(t=>t.id===e.target.dataset.check);if(t){t.done=e.target.checked;save()}}
+if(e.target.dataset.check&&!blocked){
+const t=data.tasks.find(t=>t.id===e.target.dataset.check);
+if(t){t.done=e.target.checked;save()}
+}
 });
 $("#export").onclick=()=>{
 const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-const url=URL.createObjectURL(blob),a=document.createElement("a");
-a.href=url;a.download=`college-planner-${today()}.json`;a.click();
-setTimeout(()=>URL.revokeObjectURL(url),1000);
+const u=URL.createObjectURL(blob),a=document.createElement("a");
+a.href=u;a.download=`college-tracker-${today()}.json`;a.click();
+setTimeout(()=>URL.revokeObjectURL(u),1000);
 };
-$("#import").onclick=()=>$("#file").click();
-$("#file").onchange=async e=>{
+$("#import").onclick=()=>$("#backup").click();
+$("#backup").onchange=async e=>{
 const file=e.target.files[0];if(!file)return;
 try{
-const restored=JSON.parse(await file.text());
-if(!valid(restored))throw Error();
-if(confirm("Replace the current planner with this backup?")){data=restored;save()}
-}catch{alert("This file is not a valid college planner backup.")}
+const restored=normalize(JSON.parse(await file.text()));
+if(confirm("Replace current data with this backup?")){
+data=restored;blocked=false;save();
+}
+}catch{alert("Invalid backup file.")}
 e.target.value="";
 };
 render();
