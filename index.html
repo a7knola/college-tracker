@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abby's College Planner</title>
+<style>
+:root{--bg:#f5f3ee;--paper:#fffefa;--ink:#303a33;--muted:#74796f;--line:#dedfd5;--sage:#dce5d7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:9px 14px}
+button:hover{background:var(--sage)}
+button.primary{background:var(--ink);color:white}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8b9e80;outline-offset:2px}
+header,main{max-width:1120px;margin:auto;padding:28px}
+header{padding-top:48px}
+.eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+h1{font:46px/1.1 Georgia,serif;margin:14px 0}
+h2{font:27px Georgia,serif;margin:0}
+p{color:var(--muted)}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px}
+.stat,.panel,.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px}
+.stat strong{display:block;font:34px Georgia,serif}
+.stat span{color:var(--muted);font-size:13px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}
+nav button.active{background:var(--ink);color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:20px}
+.card h3{font:23px Georgia,serif;margin:12px 0}
+.badge{font-size:11px;background:var(--sage);border-radius:20px;padding:5px 10px}
+.detail{font-size:13px;color:var(--muted);margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.deadline{font-size:13px;font-weight:600}
+.overdue{color:#9a4e3f}
+.task{display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border:0}
+.task input{width:19px;height:19px;accent-color:#607357}
+.task .body{flex:1;min-width:0;overflow-wrap:anywhere}
+.done{text-decoration:line-through;color:var(--muted)}
+.empty{padding:35px;text-align:center;color:var(--muted)}
+footer{margin-top:32px;font-size:12px;color:var(--muted)}
+dialog{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--paper);color:var(--ink);width:min(520px,92vw);max-height:90vh;overflow:auto}
+dialog::backdrop{background:#20251d75}
+label{display:block;font-size:13px;margin:15px 0 5px}
+input:not([type=checkbox]),select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink)}
+textarea{min-height:85px;resize:vertical}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
+#search{width:min(300px,100%)}
+.notice{color:#9a4e3f;font-weight:600}
+a{color:#4c6449}
+@media(max-width:600px){header,main{padding:20px}header{padding-top:32px}h1{font-size:36px}.stats{gap:8px}.stat{padding:14px}.stat strong{font-size:28px}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">Abby's planner · Class of 2027</div>
+<h1>Your next chapter.</h1>
+<p>A little organization for a big adventure.</p>
+</header>
+<main>
+<div id="notice" class="notice" role="status"></div>
+<div class="stats" id="stats"></div>
+<div class="row between">
+<nav aria-label="Planner sections">
+<button class="active" data-tab="schools">My colleges</button>
+<button data-tab="tasks">Checklist</button>
+<button data-tab="deadlines">Deadlines</button>
+</nav>
+<div class="row">
+<button id="export">Back up data</button>
+<button id="import">Restore backup</button>
+<input type="file" id="file" accept=".json,application/json" hidden>
+</div>
+</div>
+<div class="row between">
+<h2 id="heading">The college list</h2>
+<button class="primary" id="add">+ Add college</button>
+</div>
+<p id="subtitle">Keep every possibility in one place.</p>
+<input id="search" aria-label="Search colleges" placeholder="Search colleges…">
+<div id="content"></div>
+<footer>
+Saved in this browser only. Clearing site data can erase your planner.
+Use “Back up data” to download a copy you can restore later.
+</footer>
+</main>
+
+<dialog id="editor">
+<form id="form">
+<h2 id="formTitle"></h2>
+<div id="fields"></div>
+<div class="actions">
+<button type="button" id="cancel">Cancel</button>
+<button class="primary" type="submit">Save</button>
+</div>
+</form>
+</dialog>
+
+<script>
+const KEY="abby-college-planner-v1";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const statuses=["Considering","Not started","In progress","Submitted","Accepted","Waitlisted","Denied","Enrolled"];
+let data={schools:[],tasks:[]},tab="schools",editing=null,kind="school";
+function valid(d){
+return d&&Array.isArray(d.schools)&&Array.isArray(d.tasks)&&
+d.schools.every(s=>s&&typeof s.id==="string"&&typeof s.name==="string"&&statuses.includes(s.status))&&
+d.tasks.every(t=>t&&typeof t.id==="string"&&typeof t.title==="string"&&typeof t.done==="boolean")&&
+[...d.schools,...d.tasks].every(x=>["date","notes","major","url","schoolId","category"].every(k=>x[k]==null||typeof x[k]==="string"))&&
+new Set([...d.schools,...d.tasks].map(x=>x.id)).size===d.schools.length+d.tasks.length;
+}
+try{
+const saved=localStorage.getItem(KEY);
+if(saved){const parsed=JSON.parse(saved);if(!valid(parsed))throw Error();data=parsed}
+}catch(e){$("#notice").textContent="Saved data could not be loaded. Restore a backup before making changes."}
+function save(){
+try{localStorage.setItem(KEY,JSON.stringify(data));$("#notice").textContent=""}
+catch(e){$("#notice").textContent="Browser saving failed. Download a backup to keep your changes."}
+render();
+}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function fmt(date){if(!date)return "No deadline set";const d=new Date(date+"T12:00:00");return isNaN(d)?"No deadline set":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}
+function finished(s){return ["Submitted","Accepted","Waitlisted","Denied","Enrolled"].includes(s.status)}
+function safeUrl(url){try{const u=new URL(url);return ["https:","http:"].includes(u.protocol)?u.href:null}catch{return null}}
+function deadlines(){
+return [
+...data.schools.filter(s=>s.date&&!finished(s)).map(s=>({date:s.date,title:s.name,type:"College application"})),
+...data.tasks.filter(t=>t.date&&!t.done).map(t=>({date:t.date,title:t.title,type:t.category||"Task"}))
+].sort((a,b)=>a.date.localeCompare(b.date));
+}
+function render(){
+$("#stats").innerHTML=[
+[data.schools.length,"Colleges on your list"],
+[data.schools.filter(finished).length,"Applications submitted"],
+[data.tasks.filter(t=>!t.done).length,"Open tasks"]
+].map(([n,l])=>`<div class="stat"><strong>${n}</strong><span>${l}</span></div>`).join("");
+document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+$("#heading").textContent={schools:"The college list",tasks:"One step at a time",deadlines:"Dates to keep in mind"}[tab];
+$("#subtitle").textContent={schools:"Keep every possibility in one place.",tasks:"Essays, recommendations, scholarships, and everything in between.",deadlines:"Open application and task deadlines, earliest first."}[tab];
+$("#add").hidden=tab==="deadlines";
+$("#add").textContent=tab==="schools"?"+ Add college":"+ Add task";
+$("#search").hidden=tab!=="schools";
+if(tab==="schools"){
+const q=$("#search").value.toLowerCase();
+const schools=data.schools.filter(s=>s.name.toLowerCase().includes(q));
+$("#content").innerHTML=schools.length?`<div class="grid">${schools.map(s=>{
+const tasks=data.tasks.filter(t=>t.schoolId===s.id);
+const url=safeUrl(s.url);
+return `<article class="card">
+<span class="badge">${esc(s.status)}</span>
+<h3>${esc(s.name)}</h3>
+<div class="detail">${esc(s.major||"Major not added")}</div>
+<div class="deadline ${s.date&&s.date<today()&&!finished(s)?"overdue":""}">${s.date&&s.date<today()&&!finished(s)?"Past due · ":""}${fmt(s.date)}</div>
+${tasks.length?`<div class="detail">${tasks.filter(t=>t.done).length} of ${tasks.length} tasks complete</div>`:""}
+${s.notes?`<p class="detail">${esc(s.notes)}</p>`:""}
+<div class="row" style="margin-top:18px">
+<button data-edit-school="${esc(s.id)}">Edit</button>
+${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open portal ↗</a>`:""}
+<button data-delete-school="${esc(s.id)}" aria-label="Delete ${esc(s.name)}">Delete</button>
+</div></article>`}).join("")}</div>`:
+`<div class="empty">${q?"No matching colleges.":"Your next chapter starts here. Add your first college."}</div>`;
+}
+if(tab==="tasks"){
+const list=[...data.tasks].sort((a,b)=>Number(a.done)-Number(b.done)||(a.date||"9999").localeCompare(b.date||"9999"));
+$("#content").innerHTML=list.length?`<div class="panel" style="margin-top:20px">${list.map(t=>{
+const school=data.schools.find(s=>s.id===t.schoolId);
+return `<div class="task">
+<input type="checkbox" data-check="${esc(t.id)}" ${t.done?"checked":""} aria-label="Complete ${esc(t.title)}">
+<div class="body"><span class="${t.done?"done":""}">${esc(t.title)}</span>
+<div class="detail">${esc(t.category||"Other")}${school?" · "+esc(school.name):""} · <span class="${t.date&&t.date<today()&&!t.done?"overdue":""}">${fmt(t.date)}</span></div>
+${t.notes?`<div class="detail">${esc(t.notes)}</div>`:""}</div>
+<button data-edit-task="${esc(t.id)}">Edit</button>
+<button data-delete-task="${esc(t.id)}" aria-label="Delete ${esc(t.title)}">×</button>
+</div>`}).join("")}</div>`:`<div class="empty">Nothing on your checklist yet. Add your first task.</div>`;
+}
+if(tab==="deadlines"){
+const list=deadlines();
+$("#content").innerHTML=list.length?`<div class="panel" style="margin-top:20px">${list.map(d=>`<div class="task"><div class="body"><strong>${esc(d.title)}</strong><div class="detail">${esc(d.type)}</div></div><span class="deadline ${d.date<today()?"overdue":""}">${d.date<today()?"Past due · ":""}${fmt(d.date)}</span></div>`).join("")}</div>`:`<div class="empty">No open deadlines. Add a date to a college or task to see it here.</div>`;
+}
+}
+function input(label,name,value="",type="text",required=false){
+return `<label for="f-${name}">${label}</label><input id="f-${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?"required":""}>`;
+}
+function select(label,name,options,value){
+return `<label for="f-${name}">${label}</label><select id="f-${name}" name="${name}">${options.map(([v,l])=>`<option value="${esc(v)}" ${v===value?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
+}
+function openEditor(type,id=null){
+kind=type;editing=id;
+const item=(type==="school"?data.schools:data.tasks).find(x=>x.id===id)||{};
+$("#formTitle").textContent=(id?"Edit ":"Add ")+(type==="school"?"college":"task");
+$("#fields").innerHTML=type==="school"?
+input("College name","name",item.name,"text",true)+
+input("Intended major","major",item.major)+
+select("Application status","status",statuses.map(s=>[s,s]),item.status||"Considering")+
+input("Application deadline","date",item.date,"date")+
+input("Portal link (https://…)","url",item.url,"url"):
+input("Task","title",item.title,"text",true)+
+select("Category","category",["Essay","Recommendation","Transcript","Test scores","Scholarship","Nomination","Interview","Financial aid","Other"].map(s=>[s,s]),item.category||"Essay")+
+select("College","schoolId",[["","General / multiple colleges"],...data.schools.map(s=>[s.id,s.name])],item.schoolId||"")+
+input("Deadline","date",item.date,"date");
+$("#fields").innerHTML+=`<label for="f-notes">Notes</label><textarea id="f-notes" name="notes">${esc(item.notes||"")}</textarea>`;
+$("#editor").showModal();
+}
+$("#form").onsubmit=e=>{
+e.preventDefault();
+const values=Object.fromEntries(new FormData(e.target));
+if(!(values.name||values.title||"").trim())return;
+const list=kind==="school"?data.schools:data.tasks;
+if(editing){const i=list.findIndex(x=>x.id===editing);list[i]={...list[i],...values}}
+else list.push({id:crypto.randomUUID(),...values,...(kind==="task"?{done:false}:{})});
+save();$("#editor").close();
+};
+$("#cancel").onclick=()=>$("#editor").close();
+$("#add").onclick=()=>openEditor(tab==="schools"?"school":"task");
+$("#search").oninput=render;
+document.addEventListener("click",e=>{
+const b=e.target.closest("button");if(!b)return;
+if(b.dataset.tab){tab=b.dataset.tab;render()}
+if(b.dataset.editSchool)openEditor("school",b.dataset.editSchool);
+if(b.dataset.editTask)openEditor("task",b.dataset.editTask);
+if(b.dataset.deleteSchool&&confirm("Delete this college? Its tasks will remain under General.")){
+const id=b.dataset.deleteSchool;
+data.schools=data.schools.filter(s=>s.id!==id);
+data.tasks.forEach(t=>{if(t.schoolId===id)t.schoolId=""});save();
+}
+if(b.dataset.deleteTask&&confirm("Delete this task?")){data.tasks=data.tasks.filter(t=>t.id!==b.dataset.deleteTask);save()}
+});
+document.addEventListener("change",e=>{
+if(e.target.dataset.check){const t=data.tasks.find(t=>t.id===e.target.dataset.check);if(t){t.done=e.target.checked;save()}}
+});
+$("#export").onclick=()=>{
+const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+const url=URL.createObjectURL(blob),a=document.createElement("a");
+a.href=url;a.download=`college-planner-${today()}.json`;a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+$("#import").onclick=()=>$("#file").click();
+$("#file").onchange=async e=>{
+const file=e.target.files[0];if(!file)return;
+try{
+const restored=JSON.parse(await file.text());
+if(!valid(restored))throw Error();
+if(confirm("Replace the current planner with this backup?")){data=restored;save()}
+}catch{alert("This file is not a valid college planner backup.")}
+e.target.value="";
+};
+render();
+</script>
+</body>
+</html>
